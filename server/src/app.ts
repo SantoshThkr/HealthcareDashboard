@@ -1,5 +1,5 @@
 import cors from 'cors';
-import express from 'express';
+import express, { Request } from 'express';
 import helmet from 'helmet';
 import morgan from 'morgan';
 
@@ -17,7 +17,7 @@ app.use(cors({ origin: config.clientUrl }));
 app.use(express.json({ limit: '100kb' }));
 
 if (config.env !== 'test') {
-  morgan.token('path', (req) => (req.url || '').split('?')[0]);
+  morgan.token('path', (req: Request) => req.originalUrl.split('?')[0]);
   app.use(
     morgan(':method :path :status :response-time ms', {
       stream: { write: (line) => logger.info(line.trim()) },
