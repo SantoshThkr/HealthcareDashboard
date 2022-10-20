@@ -59,6 +59,10 @@ export async function login(req: Request, res: Response) {
   });
 }
 
+export async function me(req: Request, res: Response) {
+  res.json({ success: true, data: req.user });
+}
+
 export async function logout(_req: Request, res: Response) {
   res.json({ success: true, data: null });
 }

@@ -1,6 +1,7 @@
 import { DataTypes, Model, Optional } from 'sequelize';
 
 import { sequelize } from '../config/database';
+import type { Doctor } from './doctor';
 
 export const ROLES = ['ADMIN', 'DOCTOR', 'STAFF'] as const;
 export type Role = typeof ROLES[number];
@@ -34,6 +35,7 @@ export class User extends Model<UserAttributes, UserCreationAttributes> implemen
   declare lastLoginAt: Date | null;
   declare createdAt: Date;
   declare updatedAt: Date;
+  declare doctorProfile?: Doctor | null;
 
   get fullName(): string {
     return `${this.firstName} ${this.lastName}`;
