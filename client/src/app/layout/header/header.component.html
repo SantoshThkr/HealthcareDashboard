@@ -1,0 +1,25 @@
+<mat-toolbar class="header" color="primary">
+  <button
+    *ngIf="showMenuButton"
+    mat-icon-button
+    type="button"
+    aria-label="Open navigation menu"
+    (click)="menuToggle.emit()"
+  >
+    <mat-icon aria-hidden="true">menu</mat-icon>
+  </button>
+
+  <span class="app-name">Healthcare Dashboard</span>
+  <span class="spacer"></span>
+
+  <ng-container *ngIf="user$ | async as user">
+    <div class="user">
+      <span class="user-name">{{ user.firstName }} {{ user.lastName }}</span>
+      <span class="role">{{ user.role | statusLabel }}</span>
+    </div>
+    <button mat-button type="button" (click)="logout()">
+      <mat-icon aria-hidden="true">logout</mat-icon>
+      <span class="logout-label">Log out</span>
+    </button>
+  </ng-container>
+</mat-toolbar>

@@ -1,0 +1,21 @@
+<a class="skip-link" href="#main-content">Skip to main content</a>
+
+<mat-sidenav-container class="layout" *ngIf="{ handset: isHandset$ | async } as view">
+  <mat-sidenav
+    #sidenav
+    class="sidenav"
+    [mode]="view.handset ? 'over' : 'side'"
+    [opened]="!view.handset"
+    [attr.role]="view.handset ? 'dialog' : 'navigation'"
+    aria-label="Main navigation"
+  >
+    <app-sidebar (navigate)="closeOnHandset(sidenav, view.handset)"></app-sidebar>
+  </mat-sidenav>
+
+  <mat-sidenav-content>
+    <app-header [showMenuButton]="!!view.handset" (menuToggle)="sidenav.toggle()"></app-header>
+    <main id="main-content" tabindex="-1">
+      <router-outlet></router-outlet>
+    </main>
+  </mat-sidenav-content>
+</mat-sidenav-container>

@@ -19,6 +19,9 @@ import { MatTabsModule } from '@angular/material/tabs';
 import { MatTooltipModule } from '@angular/material/tooltip';
 import { RouterModule } from '@angular/router';
 
+import { PageStateComponent } from './components/page-state/page-state.component';
+import { StatusLabelPipe } from './pipes/status-label.pipe';
+
 const MATERIAL_MODULES = [
   MatButtonModule,
   MatCardModule,
@@ -38,8 +41,11 @@ const MATERIAL_MODULES = [
   MatTooltipModule,
 ];
 
+const DECLARATIONS = [PageStateComponent, StatusLabelPipe];
+
 @NgModule({
+  declarations: DECLARATIONS,
   imports: [CommonModule, ReactiveFormsModule, RouterModule, ...MATERIAL_MODULES],
-  exports: [CommonModule, ReactiveFormsModule, RouterModule, ...MATERIAL_MODULES],
+  exports: [CommonModule, ReactiveFormsModule, RouterModule, ...MATERIAL_MODULES, ...DECLARATIONS],
 })
 export class SharedModule {}

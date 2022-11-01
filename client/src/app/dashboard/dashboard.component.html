@@ -1,0 +1,119 @@
+<div class="page">
+  <div class="page-header">
+    <h1>Dashboard</h1>
+  </div>
+
+  <app-page-state
+    [state]="state"
+    loadingText="Loading dashboard..."
+    errorText="Unable to load the dashboard."
+    (retry)="load()"
+  ></app-page-state>
+
+  <ng-container *ngIf="state === 'loaded' && summary">
+    <section class="stats" aria-label="Key statistics">
+      <mat-card class="stat" *ngFor="let stat of stats">
+        <mat-icon aria-hidden="true">{{ stat.icon }}</mat-icon>
+        <div>
+          <p class="stat-value">{{ stat.value }}</p>
+          <p class="stat-label">{{ stat.label }}</p>
+        </div>
+      </mat-card>
+    </section>
+
+    <div class="grid">
+      <mat-card>
+        <h2>Appointment summary</h2>
+        <dl class="summary-list">
+          <div>
+            <dt>Today</dt>
+            <dd>{{ summary.appointmentSummary.today }}</dd>
+          </div>
+          <div>
+            <dt>Upcoming</dt>
+            <dd>{{ summary.appointmentSummary.upcoming }}</dd>
+          </div>
+          <div>
+            <dt>Completed</dt>
+            <dd>{{ summary.appointmentSummary.completed }}</dd>
+          </div>
+          <div>
+            <dt>Cancelled</dt>
+            <dd>{{ summary.appointmentSummary.cancelled }}</dd>
+          </div>
+        </dl>
+
+        <h3>By status</h3>
+        <ul class="status-bars">
+          <li *ngFor="let status of statuses">
+            <span class="bar-label">{{ status | statusLabel }}</span>
+            <span class="bar-track" aria-hidden="true">
+              <span
+                class="bar-fill status-{{ status | lowercase }}"
+                [style.width.%]="statusShare(status)"
+              ></span>
+            </span>
+            <span class="bar-value">{{ summary.appointmentsByStatus[status] }}</span>
+          </li>
+        </ul>
+      </mat-card>
+
+      <mat-card>
+        <h2>Today's appointments</h2>
+        <p class="muted" *ngIf="!summary.todayAppointments.length">No appointments today.</p>
+        <ul class="appointment-list">
+          <li *ngFor="let appointment of summary.todayAppointments">
+            <span class="time">{{ appointment.time }}</span>
+            <span class="details">
+              <a [routerLink]="['/patients', appointment.patientId]">
+                {{ appointment.patient?.firstName }} {{ appointment.patient?.lastName }}
+              </a>
+              <span class="muted"
+                >Dr. {{ appointment.doctor?.lastName }} · {{ appointment.reason }}</span
+              >
+            </span>
+            <span class="status status-{{ appointment.status | lowercase }}">
+              {{ appointment.status | statusLabel }}
+            </span>
+          </li>
+        </ul>
+      </mat-card>
+
+      <mat-card>
+        <h2>Upcoming appointments</h2>
+        <p class="muted" *ngIf="!summary.upcomingAppointments.length">No upcoming appointments.</p>
+        <ul class="appointment-list">
+          <li *ngFor="let appointment of summary.upcomingAppointments">
+            <span class="time"
+              >{{ appointment.date | date: 'MMM d' }}<br />{{ appointment.time }}</span
+            >
+            <span class="details">
+              <a [routerLink]="['/patients', appointment.patientId]">
+                {{ appointment.patient?.firstName }} {{ appointment.patient?.lastName }}
+              </a>
+              <span class="muted"
+                >Dr. {{ appointment.doctor?.lastName }} · {{ appointment.reason }}</span
+              >
+            </span>
+            <span class="status status-{{ appointment.status | lowercase }}">
+              {{ appointment.status | statusLabel }}
+            </span>
+          </li>
+        </ul>
+      </mat-card>
+
+      <mat-card>
+        <h2>Recent activity</h2>
+        <p class="muted" *ngIf="!activity.length">No recent activity.</p>
+        <ul class="activity-list">
+          <li *ngFor="let item of activity">
+            <span>{{ item.description }}</span>
+            <time class="muted" [attr.datetime]="item.createdAt">
+              {{ item.createdAt | date: 'MMM d, h:mm a' }}
+            </time>
+          </li>
+        </ul>
+      </mat-card>
+    </div>
+  </ng-container>
+</div>

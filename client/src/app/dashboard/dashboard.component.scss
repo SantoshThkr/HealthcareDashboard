@@ -1,0 +1,149 @@
+@use 'styles/variables' as vars;
+
+h2 {
+  margin: 0 0 16px;
+  font-size: 18px;
+  font-weight: 500;
+}
+
+h3 {
+  margin: 16px 0 8px;
+  font-size: 14px;
+  font-weight: 500;
+}
+
+.stats {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(190px, 1fr));
+  gap: 16px;
+  margin-bottom: 16px;
+}
+
+.stat {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+
+  mat-icon {
+    width: 40px;
+    height: 40px;
+    font-size: 40px;
+    color: #1565c0;
+  }
+
+  p {
+    margin: 0;
+  }
+}
+
+.stat-value {
+  font-size: 28px;
+  font-weight: 500;
+}
+
+.stat-label {
+  color: vars.$muted-text-color;
+}
+
+.grid {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 16px;
+
+  @media (max-width: vars.$breakpoint-md) {
+    grid-template-columns: 1fr;
+  }
+}
+
+.summary-list {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 8px;
+  margin: 0;
+
+  dt {
+    color: vars.$muted-text-color;
+  }
+
+  dd {
+    margin: 0;
+    font-size: 22px;
+    font-weight: 500;
+  }
+}
+
+ul {
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+.status-bars li {
+  display: grid;
+  grid-template-columns: 90px 1fr 32px;
+  align-items: center;
+  gap: 8px;
+  margin-bottom: 8px;
+}
+
+.bar-track {
+  height: 10px;
+  border-radius: 5px;
+  background: #eceff1;
+  overflow: hidden;
+}
+
+.bar-fill {
+  display: block;
+  height: 100%;
+  background: #90a4ae;
+
+  &.status-scheduled {
+    background: #1e88e5;
+  }
+
+  &.status-confirmed {
+    background: #00897b;
+  }
+
+  &.status-completed {
+    background: #43a047;
+  }
+
+  &.status-cancelled {
+    background: #e53935;
+  }
+}
+
+.bar-value {
+  text-align: right;
+}
+
+.appointment-list li,
+.activity-list li {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 10px 0;
+  border-bottom: 1px solid vars.$border-color;
+
+  &:last-child {
+    border-bottom: none;
+  }
+}
+
+.time {
+  min-width: 48px;
+  font-weight: 500;
+}
+
+.details {
+  display: flex;
+  flex: 1;
+  flex-direction: column;
+  min-width: 0;
+}
+
+.activity-list li {
+  justify-content: space-between;
+}

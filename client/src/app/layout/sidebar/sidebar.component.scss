@@ -1,0 +1,44 @@
+@use 'styles/variables' as vars;
+
+.brand {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  height: 64px;
+  padding: 0 20px;
+  font-size: 18px;
+  font-weight: 500;
+  color: #fff;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.12);
+}
+
+ul {
+  margin: 0;
+  padding: 8px 0;
+  list-style: none;
+}
+
+a {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+  padding: 12px 20px;
+  color: vars.$sidebar-text;
+  text-decoration: none;
+  border-left: 4px solid transparent;
+
+  &:hover {
+    background: rgba(255, 255, 255, 0.08);
+  }
+
+  &:focus-visible {
+    outline: 2px solid #fff;
+    outline-offset: -2px;
+  }
+
+  &.active {
+    background: rgba(255, 255, 255, 0.14);
+    border-left-color: #4fc3f7;
+    color: #fff;
+  }
+}

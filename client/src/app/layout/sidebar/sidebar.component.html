@@ -1,0 +1,21 @@
+<div class="brand">
+  <mat-icon aria-hidden="true">local_hospital</mat-icon>
+  <span>Demo Clinic</span>
+</div>
+
+<nav>
+  <ul>
+    <li *ngFor="let item of items$ | async">
+      <a
+        [routerLink]="item.path"
+        routerLinkActive="active"
+        #rla="routerLinkActive"
+        [attr.aria-current]="rla.isActive ? 'page' : null"
+        (click)="navigate.emit()"
+      >
+        <mat-icon aria-hidden="true">{{ item.icon }}</mat-icon>
+        <span>{{ item.label }}</span>
+      </a>
+    </li>
+  </ul>
+</nav>

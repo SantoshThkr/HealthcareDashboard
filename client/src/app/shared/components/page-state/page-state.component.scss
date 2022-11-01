@@ -1,0 +1,12 @@
+.page-state {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 8px;
+  padding: 32px 16px;
+  text-align: center;
+}
+
+.error-text {
+  color: #b71c1c;
+}
