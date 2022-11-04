@@ -1,0 +1,80 @@
+<div class="page">
+  <div class="page-header">
+    <h1>{{ doctorId ? 'Edit doctor' : 'Add doctor' }}</h1>
+  </div>
+
+  <app-page-state
+    [state]="state"
+    loadingText="Loading doctor..."
+    errorText="Unable to load this doctor."
+    (retry)="load()"
+  ></app-page-state>
+
+  <mat-card *ngIf="state === 'loaded'">
+    <p class="form-error" *ngIf="formError" role="alert">{{ formError }}</p>
+
+    <form [formGroup]="form" (ngSubmit)="submit()" novalidate>
+      <div class="form-grid">
+        <mat-form-field appearance="outline">
+          <mat-label>First name</mat-label>
+          <input matInput formControlName="firstName" required />
+          <mat-error>{{ error('firstName', 'First name') }}</mat-error>
+        </mat-form-field>
+        <mat-form-field appearance="outline">
+          <mat-label>Last name</mat-label>
+          <input matInput formControlName="lastName" required />
+          <mat-error>{{ error('lastName', 'Last name') }}</mat-error>
+        </mat-form-field>
+        <mat-form-field appearance="outline">
+          <mat-label>Email</mat-label>
+          <input matInput type="email" formControlName="email" required />
+          <mat-error>{{ error('email', 'Email') }}</mat-error>
+        </mat-form-field>
+        <mat-form-field appearance="outline">
+          <mat-label>Phone</mat-label>
+          <input matInput type="tel" formControlName="phone" required />
+          <mat-error>{{ error('phone', 'Phone') }}</mat-error>
+        </mat-form-field>
+        <mat-form-field appearance="outline">
+          <mat-label>Specialization</mat-label>
+          <input matInput formControlName="specialization" required />
+          <mat-error>{{ error('specialization', 'Specialization') }}</mat-error>
+        </mat-form-field>
+        <mat-form-field appearance="outline">
+          <mat-label>Department</mat-label>
+          <mat-select formControlName="department" required>
+            <mat-option *ngFor="let department of departments" [value]="department">
+              {{ department }}
+            </mat-option>
+          </mat-select>
+          <mat-error>{{ error('department', 'Department') }}</mat-error>
+        </mat-form-field>
+        <mat-form-field appearance="outline">
+          <mat-label>License number</mat-label>
+          <input matInput formControlName="licenseNumber" required />
+          <mat-error>{{ error('licenseNumber', 'License number') }}</mat-error>
+        </mat-form-field>
+        <mat-form-field appearance="outline">
+          <mat-label>Status</mat-label>
+          <mat-select formControlName="status" required>
+            <mat-option *ngFor="let status of statuses" [value]="status">
+              {{ status | statusLabel }}
+            </mat-option>
+          </mat-select>
+        </mat-form-field>
+        <mat-form-field appearance="outline" class="full-width">
+          <mat-label>Availability</mat-label>
+          <input matInput formControlName="availability" placeholder="e.g. Mon-Fri, 09:00-17:00" />
+          <mat-error>{{ error('availability', 'Availability') }}</mat-error>
+        </mat-form-field>
+      </div>
+
+      <div class="form-actions">
+        <a mat-button routerLink="/doctors">Cancel</a>
+        <button mat-flat-button color="primary" type="submit" [disabled]="submitting">
+          {{ submitting ? 'Saving...' : 'Save doctor' }}
+        </button>
+      </div>
+    </form>
+  </mat-card>
+</div>

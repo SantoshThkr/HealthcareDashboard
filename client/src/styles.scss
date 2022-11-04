@@ -170,3 +170,12 @@ a {
   clip: rect(0 0 0 0);
   white-space: nowrap;
 }
+
+.snackbar-error {
+  background: #8a1c14;
+  color: #fff;
+
+  .mat-simple-snackbar-action {
+    color: #fff;
+  }
+}

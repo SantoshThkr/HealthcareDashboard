@@ -19,6 +19,7 @@ import { MatTabsModule } from '@angular/material/tabs';
 import { MatTooltipModule } from '@angular/material/tooltip';
 import { RouterModule } from '@angular/router';
 
+import { ConfirmDialogComponent } from './components/confirm-dialog/confirm-dialog.component';
 import { PageStateComponent } from './components/page-state/page-state.component';
 import { StatusLabelPipe } from './pipes/status-label.pipe';
 
@@ -41,7 +42,7 @@ const MATERIAL_MODULES = [
   MatTooltipModule,
 ];
 
-const DECLARATIONS = [PageStateComponent, StatusLabelPipe];
+const DECLARATIONS = [ConfirmDialogComponent, PageStateComponent, StatusLabelPipe];
 
 @NgModule({
   declarations: DECLARATIONS,

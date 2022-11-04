@@ -1,0 +1,124 @@
+<div class="page">
+  <div class="page-header">
+    <h1>Doctors</h1>
+    <a *ngIf="canManage" mat-flat-button color="primary" routerLink="new">
+      <mat-icon aria-hidden="true">add</mat-icon>
+      Add doctor
+    </a>
+  </div>
+
+  <mat-card>
+    <form class="filters" [formGroup]="filters" role="search">
+      <mat-form-field appearance="outline">
+        <mat-label>Search</mat-label>
+        <input matInput formControlName="search" placeholder="Name, email, license..." />
+        <mat-icon matSuffix aria-hidden="true">search</mat-icon>
+      </mat-form-field>
+      <mat-form-field appearance="outline">
+        <mat-label>Department</mat-label>
+        <mat-select formControlName="department">
+          <mat-option value="">All departments</mat-option>
+          <mat-option *ngFor="let department of departments" [value]="department">
+            {{ department }}
+          </mat-option>
+        </mat-select>
+      </mat-form-field>
+      <mat-form-field appearance="outline">
+        <mat-label>Status</mat-label>
+        <mat-select formControlName="status">
+          <mat-option value="">All statuses</mat-option>
+          <mat-option *ngFor="let status of statuses" [value]="status">
+            {{ status | statusLabel }}
+          </mat-option>
+        </mat-select>
+      </mat-form-field>
+    </form>
+
+    <div class="table-container">
+      <table
+        mat-table
+        [dataSource]="doctors"
+        matSort
+        matSortActive="name"
+        matSortDirection="asc"
+        aria-label="Doctors"
+      >
+        <ng-container matColumnDef="id">
+          <th mat-header-cell *matHeaderCellDef mat-sort-header>ID</th>
+          <td mat-cell *matCellDef="let doctor">{{ doctor.id }}</td>
+        </ng-container>
+        <ng-container matColumnDef="name">
+          <th mat-header-cell *matHeaderCellDef mat-sort-header>Name</th>
+          <td mat-cell *matCellDef="let doctor">
+            Dr. {{ doctor.firstName }} {{ doctor.lastName }}
+          </td>
+        </ng-container>
+        <ng-container matColumnDef="specialization">
+          <th mat-header-cell *matHeaderCellDef mat-sort-header>Specialization</th>
+          <td mat-cell *matCellDef="let doctor">{{ doctor.specialization }}</td>
+        </ng-container>
+        <ng-container matColumnDef="email">
+          <th mat-header-cell *matHeaderCellDef>Email</th>
+          <td mat-cell *matCellDef="let doctor">{{ doctor.email }}</td>
+        </ng-container>
+        <ng-container matColumnDef="phone">
+          <th mat-header-cell *matHeaderCellDef>Phone</th>
+          <td mat-cell *matCellDef="let doctor">{{ doctor.phone }}</td>
+        </ng-container>
+        <ng-container matColumnDef="department">
+          <th mat-header-cell *matHeaderCellDef mat-sort-header>Department</th>
+          <td mat-cell *matCellDef="let doctor">{{ doctor.department }}</td>
+        </ng-container>
+        <ng-container matColumnDef="availability">
+          <th mat-header-cell *matHeaderCellDef>Availability</th>
+          <td mat-cell *matCellDef="let doctor">{{ doctor.availability || '—' }}</td>
+        </ng-container>
+        <ng-container matColumnDef="status">
+          <th mat-header-cell *matHeaderCellDef mat-sort-header>Status</th>
+          <td mat-cell *matCellDef="let doctor">
+            <span class="status status-{{ doctor.status | lowercase }}">
+              {{ doctor.status | statusLabel }}
+            </span>
+          </td>
+        </ng-container>
+        <ng-container matColumnDef="actions">
+          <th mat-header-cell *matHeaderCellDef><span class="visually-hidden">Actions</span></th>
+          <td mat-cell *matCellDef="let doctor">
+            <ng-container *ngIf="canManage">
+              <button
+                mat-icon-button
+                type="button"
+                [matMenuTriggerFor]="menu"
+                [attr.aria-label]="'Actions for Dr. ' + doctor.lastName"
+              >
+                <mat-icon aria-hidden="true">more_vert</mat-icon>
+              </button>
+              <mat-menu #menu="matMenu">
+                <a mat-menu-item [routerLink]="[doctor.id, 'edit']">Edit</a>
+                <button mat-menu-item type="button" (click)="confirmDelete(doctor)">Delete</button>
+              </mat-menu>
+            </ng-container>
+          </td>
+        </ng-container>
+
+        <tr mat-header-row *matHeaderRowDef="columns"></tr>
+        <tr mat-row *matRowDef="let row; columns: columns"></tr>
+      </table>
+    </div>
+
+    <app-page-state
+      [state]="state"
+      loadingText="Loading doctors..."
+      emptyText="No doctors found."
+      errorText="Unable to load doctors."
+      (retry)="reload()"
+    ></app-page-state>
+
+    <mat-paginator
+      [length]="total"
+      [pageSize]="10"
+      [pageSizeOptions]="[10, 25, 50]"
+      aria-label="Select page of doctors"
+    ></mat-paginator>
+  </mat-card>
+</div>
