@@ -1,0 +1,55 @@
+@use 'styles/variables' as vars;
+
+.page-header h1 {
+  display: block;
+}
+
+.page-header .status {
+  margin-left: 8px;
+}
+
+.overview {
+  display: grid;
+  grid-template-columns: 2fr 1fr;
+  gap: 16px;
+  padding: 16px 0;
+
+  @media (max-width: vars.$breakpoint-md) {
+    grid-template-columns: 1fr;
+  }
+}
+
+h2 {
+  margin: 0 0 16px;
+  font-size: 18px;
+  font-weight: 500;
+}
+
+.details {
+  display: grid;
+  grid-template-columns: 160px 1fr;
+  gap: 8px 16px;
+  margin: 0;
+
+  dt {
+    color: vars.$muted-text-color;
+  }
+
+  dd {
+    margin: 0;
+  }
+
+  @media (max-width: vars.$breakpoint-sm) {
+    grid-template-columns: 1fr;
+
+    dd {
+      margin-bottom: 8px;
+    }
+  }
+}
+
+.doctor-name {
+  margin: 0;
+  font-size: 16px;
+  font-weight: 500;
+}

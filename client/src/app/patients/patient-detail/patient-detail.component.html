@@ -1,0 +1,66 @@
+<div class="page">
+  <app-page-state
+    [state]="state"
+    loadingText="Loading patient..."
+    [errorText]="errorText"
+    (retry)="load()"
+  ></app-page-state>
+
+  <ng-container *ngIf="state === 'loaded' && patient">
+    <div class="page-header">
+      <div>
+        <h1>{{ patient.firstName }} {{ patient.lastName }}</h1>
+        <span class="muted">Patient #{{ patient.id }}</span>
+        <span class="status status-{{ patient.status | lowercase }}">
+          {{ patient.status | statusLabel }}
+        </span>
+      </div>
+      <a *ngIf="canEdit" mat-stroked-button [routerLink]="['/patients', patient.id, 'edit']">
+        <mat-icon aria-hidden="true">edit</mat-icon>
+        Edit patient
+      </a>
+    </div>
+
+    <mat-tab-group animationDuration="0ms">
+      <mat-tab label="Overview">
+        <div class="overview">
+          <mat-card>
+            <h2>Patient information</h2>
+            <dl class="details">
+              <dt>Date of birth</dt>
+              <dd>{{ patient.dateOfBirth | date: 'mediumDate' }}</dd>
+              <dt>Gender</dt>
+              <dd>{{ patient.gender | statusLabel }}</dd>
+              <dt>Phone</dt>
+              <dd>{{ patient.phone }}</dd>
+              <dt>Email</dt>
+              <dd>{{ patient.email || '—' }}</dd>
+              <dt>Address</dt>
+              <dd>{{ patient.address || '—' }}</dd>
+              <dt>Emergency contact</dt>
+              <dd>
+                {{ patient.emergencyContactName || '—' }}
+                <span *ngIf="patient.emergencyContactPhone"
+                  >({{ patient.emergencyContactPhone }})</span
+                >
+              </dd>
+            </dl>
+          </mat-card>
+
+          <mat-card>
+            <h2>Assigned doctor</h2>
+            <ng-container *ngIf="patient.doctor; else noDoctor">
+              <p class="doctor-name">
+                Dr. {{ patient.doctor.firstName }} {{ patient.doctor.lastName }}
+              </p>
+              <p class="muted">{{ patient.doctor.specialization }}</p>
+            </ng-container>
+            <ng-template #noDoctor>
+              <p class="muted">No doctor assigned.</p>
+            </ng-template>
+          </mat-card>
+        </div>
+      </mat-tab>
+    </mat-tab-group>
+  </ng-container>
+</div>

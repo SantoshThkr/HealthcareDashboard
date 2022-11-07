@@ -1,0 +1,104 @@
+<div class="page">
+  <div class="page-header">
+    <h1>{{ patientId ? 'Edit patient' : 'Add patient' }}</h1>
+  </div>
+
+  <app-page-state
+    [state]="state"
+    loadingText="Loading patient..."
+    errorText="Unable to load the patient form."
+    (retry)="load()"
+  ></app-page-state>
+
+  <mat-card *ngIf="state === 'loaded'">
+    <p class="form-error" *ngIf="formError" role="alert">{{ formError }}</p>
+
+    <form [formGroup]="form" (ngSubmit)="submit()" novalidate>
+      <div class="form-grid">
+        <mat-form-field appearance="outline">
+          <mat-label>First name</mat-label>
+          <input matInput formControlName="firstName" required />
+          <mat-error>{{ error('firstName', 'First name') }}</mat-error>
+        </mat-form-field>
+        <mat-form-field appearance="outline">
+          <mat-label>Last name</mat-label>
+          <input matInput formControlName="lastName" required />
+          <mat-error>{{ error('lastName', 'Last name') }}</mat-error>
+        </mat-form-field>
+        <mat-form-field appearance="outline">
+          <mat-label>Date of birth</mat-label>
+          <input
+            matInput
+            [matDatepicker]="dobPicker"
+            formControlName="dateOfBirth"
+            [min]="minBirthDate"
+            [max]="maxBirthDate"
+            required
+          />
+          <mat-datepicker-toggle matSuffix [for]="dobPicker"></mat-datepicker-toggle>
+          <mat-datepicker #dobPicker startView="multi-year"></mat-datepicker>
+          <mat-error>{{ error('dateOfBirth', 'Date of birth') }}</mat-error>
+        </mat-form-field>
+        <mat-form-field appearance="outline">
+          <mat-label>Gender</mat-label>
+          <mat-select formControlName="gender" required>
+            <mat-option *ngFor="let gender of genders" [value]="gender">
+              {{ gender | statusLabel }}
+            </mat-option>
+          </mat-select>
+          <mat-error>{{ error('gender', 'Gender') }}</mat-error>
+        </mat-form-field>
+        <mat-form-field appearance="outline">
+          <mat-label>Phone</mat-label>
+          <input matInput type="tel" formControlName="phone" required />
+          <mat-error>{{ error('phone', 'Phone') }}</mat-error>
+        </mat-form-field>
+        <mat-form-field appearance="outline">
+          <mat-label>Email</mat-label>
+          <input matInput type="email" formControlName="email" />
+          <mat-error>{{ error('email', 'Email') }}</mat-error>
+        </mat-form-field>
+        <mat-form-field appearance="outline" class="full-width">
+          <mat-label>Address</mat-label>
+          <input matInput formControlName="address" />
+          <mat-error>{{ error('address', 'Address') }}</mat-error>
+        </mat-form-field>
+        <mat-form-field appearance="outline">
+          <mat-label>Emergency contact name</mat-label>
+          <input matInput formControlName="emergencyContactName" />
+          <mat-error>{{ error('emergencyContactName', 'Emergency contact name') }}</mat-error>
+        </mat-form-field>
+        <mat-form-field appearance="outline">
+          <mat-label>Emergency contact phone</mat-label>
+          <input matInput type="tel" formControlName="emergencyContactPhone" />
+          <mat-error>{{ error('emergencyContactPhone', 'Emergency contact phone') }}</mat-error>
+        </mat-form-field>
+        <mat-form-field appearance="outline">
+          <mat-label>Assigned doctor</mat-label>
+          <mat-select formControlName="doctorId">
+            <mat-option [value]="null">Unassigned</mat-option>
+            <mat-option *ngFor="let doctor of doctors" [value]="doctor.id">
+              Dr. {{ doctor.firstName }} {{ doctor.lastName }} ({{ doctor.specialization }})
+            </mat-option>
+          </mat-select>
+          <mat-error>{{ error('doctorId', 'Doctor') }}</mat-error>
+        </mat-form-field>
+        <mat-form-field appearance="outline">
+          <mat-label>Status</mat-label>
+          <mat-select formControlName="status" required>
+            <mat-option *ngFor="let status of statuses" [value]="status">
+              {{ status | statusLabel }}
+            </mat-option>
+          </mat-select>
+        </mat-form-field>
+      </div>
+
+      <div class="form-actions">
+        <a mat-button [routerLink]="patientId ? ['/patients', patientId] : ['/patients']">Cancel</a>
+        <button mat-flat-button color="primary" type="submit" [disabled]="submitting">
+          {{ submitting ? 'Saving...' : 'Save patient' }}
+        </button>
+      </div>
+    </form>
+  </mat-card>
+</div>
