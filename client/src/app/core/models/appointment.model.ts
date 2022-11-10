@@ -25,3 +25,19 @@ export interface Appointment {
   patient?: PersonRef;
   doctor?: PersonRef;
 }
+
+export const NEXT_STATUSES: Record<AppointmentStatus, AppointmentStatus[]> = {
+  SCHEDULED: ['CONFIRMED', 'CANCELLED'],
+  CONFIRMED: ['COMPLETED', 'CANCELLED'],
+  COMPLETED: [],
+  CANCELLED: [],
+};
+
+export interface AppointmentPayload {
+  patientId: number;
+  doctorId: number;
+  date: string;
+  time: string;
+  reason: string;
+  notes: string | null;
+}

@@ -1,0 +1,80 @@
+<div class="page">
+  <div class="page-header">
+    <h1>{{ appointmentId ? 'Edit appointment' : 'New appointment' }}</h1>
+  </div>
+
+  <app-page-state
+    [state]="state"
+    loadingText="Loading appointment..."
+    errorText="Unable to load the appointment form."
+    (retry)="load()"
+  ></app-page-state>
+
+  <mat-card *ngIf="state === 'loaded'">
+    <p class="form-error" *ngIf="isLocked" role="status">
+      This appointment is {{ appointment?.status | statusLabel | lowercase }} and can no longer be
+      changed.
+    </p>
+    <p class="form-error" *ngIf="formError" role="alert">{{ formError }}</p>
+
+    <form [formGroup]="form" (ngSubmit)="submit()" novalidate>
+      <div class="form-grid">
+        <mat-form-field appearance="outline">
+          <mat-label>Patient</mat-label>
+          <mat-select formControlName="patientId" required>
+            <mat-option *ngFor="let patient of patients" [value]="patient.id">
+              {{ patient.firstName }} {{ patient.lastName }} (#{{ patient.id }})
+            </mat-option>
+          </mat-select>
+          <mat-error>{{ error('patientId', 'Patient') }}</mat-error>
+        </mat-form-field>
+        <mat-form-field appearance="outline">
+          <mat-label>Doctor</mat-label>
+          <mat-select formControlName="doctorId" required>
+            <mat-option *ngFor="let doctor of doctors" [value]="doctor.id">
+              Dr. {{ doctor.firstName }} {{ doctor.lastName }}
+            </mat-option>
+          </mat-select>
+          <mat-error>{{ error('doctorId', 'Doctor') }}</mat-error>
+        </mat-form-field>
+        <mat-form-field appearance="outline">
+          <mat-label>Appointment date</mat-label>
+          <input
+            matInput
+            [matDatepicker]="datePicker"
+            formControlName="date"
+            [min]="minDate"
+            required
+          />
+          <mat-datepicker-toggle matSuffix [for]="datePicker"></mat-datepicker-toggle>
+          <mat-datepicker #datePicker></mat-datepicker>
+          <mat-error>{{ error('date', 'Date') }}</mat-error>
+        </mat-form-field>
+        <mat-form-field appearance="outline">
+          <mat-label>Appointment time</mat-label>
+          <mat-select formControlName="time" required>
+            <mat-option *ngFor="let slot of slots" [value]="slot">{{ slot }}</mat-option>
+          </mat-select>
+          <mat-error>{{ error('time', 'Time') }}</mat-error>
+        </mat-form-field>
+        <mat-form-field appearance="outline" class="full-width">
+          <mat-label>Reason</mat-label>
+          <input matInput formControlName="reason" required />
+          <mat-error>{{ error('reason', 'Reason') }}</mat-error>
+        </mat-form-field>
+        <mat-form-field appearance="outline" class="full-width">
+          <mat-label>Notes</mat-label>
+          <textarea matInput formControlName="notes" rows="3"></textarea>
+          <mat-error>{{ error('notes', 'Notes') }}</mat-error>
+        </mat-form-field>
+      </div>
+
+      <div class="form-actions">
+        <a mat-button routerLink="/appointments">Cancel</a>
+        <button mat-flat-button color="primary" type="submit" [disabled]="submitting || isLocked">
+          {{ submitting ? 'Saving...' : 'Save appointment' }}
+        </button>
+      </div>
+    </form>
+  </mat-card>
+</div>

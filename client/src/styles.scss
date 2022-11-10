@@ -71,6 +71,12 @@ a {
   .mat-form-field {
     flex: 1 1 180px;
   }
+
+  .filter-actions {
+    display: flex;
+    align-items: center;
+    padding-bottom: 1.34375em;
+  }
 }
 
 .table-container {
@@ -99,6 +105,12 @@ a {
   @media (max-width: vars.$breakpoint-sm) {
     grid-template-columns: 1fr;
   }
+}
+
+.tab-toolbar {
+  display: flex;
+  justify-content: flex-end;
+  margin-bottom: 8px;
 }
 
 .form-actions {

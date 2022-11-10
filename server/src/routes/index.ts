@@ -1,5 +1,6 @@
 import { Router } from 'express';
 
+import appointmentRoutes from './appointmentRoutes';
 import authRoutes from './authRoutes';
 import dashboardRoutes from './dashboardRoutes';
 import doctorRoutes from './doctorRoutes';
@@ -15,5 +16,6 @@ router.use('/auth', authRoutes);
 router.use('/dashboard', dashboardRoutes);
 router.use('/doctors', doctorRoutes);
 router.use('/patients', patientRoutes);
+router.use('/appointments', appointmentRoutes);
 
 export default router;

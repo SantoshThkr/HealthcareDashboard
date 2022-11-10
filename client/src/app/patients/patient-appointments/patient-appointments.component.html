@@ -1,0 +1,51 @@
+<div class="tab-toolbar" *ngIf="canBook">
+  <a
+    mat-stroked-button
+    color="primary"
+    routerLink="/appointments/new"
+    [queryParams]="{ patientId: patientId }"
+  >
+    <mat-icon aria-hidden="true">event</mat-icon>
+    Book appointment
+  </a>
+</div>
+
+<div class="table-container" *ngIf="state === 'loaded'">
+  <table mat-table [dataSource]="appointments" aria-label="Patient appointments">
+    <ng-container matColumnDef="date">
+      <th mat-header-cell *matHeaderCellDef>Date</th>
+      <td mat-cell *matCellDef="let appointment">{{ appointment.date | date: 'mediumDate' }}</td>
+    </ng-container>
+    <ng-container matColumnDef="time">
+      <th mat-header-cell *matHeaderCellDef>Time</th>
+      <td mat-cell *matCellDef="let appointment">{{ appointment.time }}</td>
+    </ng-container>
+    <ng-container matColumnDef="doctor">
+      <th mat-header-cell *matHeaderCellDef>Doctor</th>
+      <td mat-cell *matCellDef="let appointment">Dr. {{ appointment.doctor?.lastName }}</td>
+    </ng-container>
+    <ng-container matColumnDef="reason">
+      <th mat-header-cell *matHeaderCellDef>Reason</th>
+      <td mat-cell *matCellDef="let appointment">{{ appointment.reason }}</td>
+    </ng-container>
+    <ng-container matColumnDef="status">
+      <th mat-header-cell *matHeaderCellDef>Status</th>
+      <td mat-cell *matCellDef="let appointment">
+        <span class="status status-{{ appointment.status | lowercase }}">
+          {{ appointment.status | statusLabel }}
+        </span>
+      </td>
+    </ng-container>
+
+    <tr mat-header-row *matHeaderRowDef="columns"></tr>
+    <tr mat-row *matRowDef="let row; columns: columns"></tr>
+  </table>
+</div>
+
+<app-page-state
+  [state]="state"
+  loadingText="Loading appointments..."
+  emptyText="No appointments for this patient."
+  errorText="Unable to load appointments."
+  (retry)="load()"
+></app-page-state>

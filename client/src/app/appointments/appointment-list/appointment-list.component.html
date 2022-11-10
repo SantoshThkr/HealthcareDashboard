@@ -1,0 +1,153 @@
+<div class="page">
+  <div class="page-header">
+    <h1>Appointments</h1>
+    <a *ngIf="canEdit" mat-flat-button color="primary" routerLink="new">
+      <mat-icon aria-hidden="true">event</mat-icon>
+      New appointment
+    </a>
+  </div>
+
+  <mat-card>
+    <form class="filters" [formGroup]="filters" role="search">
+      <mat-form-field appearance="outline">
+        <mat-label>Search</mat-label>
+        <input matInput formControlName="search" placeholder="Patient or reason" />
+        <mat-icon matSuffix aria-hidden="true">search</mat-icon>
+      </mat-form-field>
+      <mat-form-field appearance="outline">
+        <mat-label>Date</mat-label>
+        <input matInput [matDatepicker]="datePicker" formControlName="date" />
+        <mat-datepicker-toggle matSuffix [for]="datePicker"></mat-datepicker-toggle>
+        <mat-datepicker #datePicker></mat-datepicker>
+      </mat-form-field>
+      <mat-form-field *ngIf="!isDoctor" appearance="outline">
+        <mat-label>Doctor</mat-label>
+        <mat-select formControlName="doctorId">
+          <mat-option value="">All doctors</mat-option>
+          <mat-option *ngFor="let doctor of doctors$ | async" [value]="doctor.id">
+            Dr. {{ doctor.firstName }} {{ doctor.lastName }}
+          </mat-option>
+        </mat-select>
+      </mat-form-field>
+      <mat-form-field appearance="outline">
+        <mat-label>Status</mat-label>
+        <mat-select formControlName="status">
+          <mat-option value="">All statuses</mat-option>
+          <mat-option *ngFor="let status of statuses" [value]="status">
+            {{ status | statusLabel }}
+          </mat-option>
+        </mat-select>
+      </mat-form-field>
+      <div class="filter-actions">
+        <button mat-button type="button" (click)="clearFilters()">Clear filters</button>
+      </div>
+    </form>
+
+    <div class="table-container">
+      <table
+        mat-table
+        [dataSource]="appointments"
+        matSort
+        matSortActive="date"
+        matSortDirection="desc"
+        aria-label="Appointments"
+      >
+        <ng-container matColumnDef="date">
+          <th mat-header-cell *matHeaderCellDef mat-sort-header>Date</th>
+          <td mat-cell *matCellDef="let appointment">
+            {{ appointment.date | date: 'mediumDate' }}
+          </td>
+        </ng-container>
+        <ng-container matColumnDef="time">
+          <th mat-header-cell *matHeaderCellDef>Time</th>
+          <td mat-cell *matCellDef="let appointment">{{ appointment.time }}</td>
+        </ng-container>
+        <ng-container matColumnDef="patient">
+          <th mat-header-cell *matHeaderCellDef>Patient</th>
+          <td mat-cell *matCellDef="let appointment">
+            <a [routerLink]="['/patients', appointment.patientId]">
+              {{ appointment.patient?.firstName }} {{ appointment.patient?.lastName }}
+            </a>
+          </td>
+        </ng-container>
+        <ng-container matColumnDef="doctor">
+          <th mat-header-cell *matHeaderCellDef>Doctor</th>
+          <td mat-cell *matCellDef="let appointment">
+            Dr. {{ appointment.doctor?.firstName }} {{ appointment.doctor?.lastName }}
+          </td>
+        </ng-container>
+        <ng-container matColumnDef="reason">
+          <th mat-header-cell *matHeaderCellDef>Reason</th>
+          <td mat-cell *matCellDef="let appointment">{{ appointment.reason }}</td>
+        </ng-container>
+        <ng-container matColumnDef="status">
+          <th mat-header-cell *matHeaderCellDef mat-sort-header>Status</th>
+          <td mat-cell *matCellDef="let appointment">
+            <span class="status status-{{ appointment.status | lowercase }}">
+              {{ appointment.status | statusLabel }}
+            </span>
+          </td>
+        </ng-container>
+        <ng-container matColumnDef="actions">
+          <th mat-header-cell *matHeaderCellDef><span class="visually-hidden">Actions</span></th>
+          <td mat-cell *matCellDef="let appointment">
+            <button
+              *ngIf="!isFinal(appointment) || canDelete"
+              mat-icon-button
+              type="button"
+              [matMenuTriggerFor]="menu"
+              [attr.aria-label]="
+                'Actions for appointment on ' + appointment.date + ' at ' + appointment.time
+              "
+            >
+              <mat-icon aria-hidden="true">more_vert</mat-icon>
+            </button>
+            <mat-menu #menu="matMenu">
+              <button
+                *ngFor="let status of nextStatuses(appointment)"
+                mat-menu-item
+                type="button"
+                (click)="changeStatus(appointment, status)"
+              >
+                {{ actionLabel(status) }}
+              </button>
+              <a
+                *ngIf="canEdit && !isFinal(appointment)"
+                mat-menu-item
+                [routerLink]="[appointment.id, 'edit']"
+              >
+                Edit
+              </a>
+              <button
+                *ngIf="canDelete"
+                mat-menu-item
+                type="button"
+                (click)="confirmDelete(appointment)"
+              >
+                Delete
+              </button>
+            </mat-menu>
+          </td>
+        </ng-container>
+
+        <tr mat-header-row *matHeaderRowDef="columns"></tr>
+        <tr mat-row *matRowDef="let row; columns: columns"></tr>
+      </table>
+    </div>
+
+    <app-page-state
+      [state]="state"
+      loadingText="Loading appointments..."
+      emptyText="No appointments found."
+      errorText="Unable to load appointments."
+      (retry)="reload()"
+    ></app-page-state>
+
+    <mat-paginator
+      [length]="total"
+      [pageSize]="10"
+      [pageSizeOptions]="[10, 25, 50]"
+      aria-label="Select page of appointments"
+    ></mat-paginator>
+  </mat-card>
+</div>
