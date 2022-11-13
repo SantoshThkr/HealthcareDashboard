@@ -1,0 +1,93 @@
+<div class="page">
+  <div class="page-header">
+    <h1>{{ recordId ? 'Edit medical record' : 'Add medical record' }}</h1>
+  </div>
+
+  <app-page-state
+    [state]="state"
+    loadingText="Loading..."
+    errorText="Unable to load the medical record form."
+    (retry)="load()"
+  ></app-page-state>
+
+  <mat-card *ngIf="state === 'loaded'">
+    <p class="muted">Demo application — records contain synthetic data only.</p>
+    <p class="form-error" *ngIf="formError" role="alert">{{ formError }}</p>
+
+    <form [formGroup]="form" (ngSubmit)="submit()" novalidate>
+      <div class="form-grid">
+        <mat-form-field
+          appearance="outline"
+          class="full-width"
+          *ngIf="!recordId; else fixedPatient"
+        >
+          <mat-label>Patient</mat-label>
+          <mat-select formControlName="patientId" required>
+            <mat-option *ngFor="let option of patients" [value]="option.id">
+              {{ option.firstName }} {{ option.lastName }} (#{{ option.id }})
+            </mat-option>
+          </mat-select>
+          <mat-error>{{ error('patientId', 'Patient') }}</mat-error>
+        </mat-form-field>
+        <ng-template #fixedPatient>
+          <p class="full-width">
+            Patient: <strong>{{ patient?.firstName }} {{ patient?.lastName }}</strong>
+          </p>
+        </ng-template>
+
+        <mat-form-field appearance="outline">
+          <mat-label>Visit date</mat-label>
+          <input
+            matInput
+            [matDatepicker]="visitPicker"
+            formControlName="visitDate"
+            [max]="today"
+            required
+          />
+          <mat-datepicker-toggle matSuffix [for]="visitPicker"></mat-datepicker-toggle>
+          <mat-datepicker #visitPicker></mat-datepicker>
+          <mat-error>{{ error('visitDate', 'Visit date') }}</mat-error>
+        </mat-form-field>
+        <mat-form-field appearance="outline">
+          <mat-label>Follow-up date</mat-label>
+          <input matInput [matDatepicker]="followUpPicker" formControlName="followUpDate" />
+          <mat-datepicker-toggle matSuffix [for]="followUpPicker"></mat-datepicker-toggle>
+          <mat-datepicker #followUpPicker></mat-datepicker>
+          <mat-hint *ngIf="form.hasError('followUpBeforeVisit')" class="hint-error">
+            Follow-up must be on or after the visit date
+          </mat-hint>
+          <mat-error>{{ error('followUpDate', 'Follow-up date') }}</mat-error>
+        </mat-form-field>
+        <mat-form-field appearance="outline" class="full-width">
+          <mat-label>Diagnosis</mat-label>
+          <input matInput formControlName="diagnosis" required />
+          <mat-error>{{ error('diagnosis', 'Diagnosis') }}</mat-error>
+        </mat-form-field>
+        <mat-form-field appearance="outline" class="full-width">
+          <mat-label>Symptoms</mat-label>
+          <textarea matInput formControlName="symptoms" rows="2"></textarea>
+          <mat-error>{{ error('symptoms', 'Symptoms') }}</mat-error>
+        </mat-form-field>
+        <mat-form-field appearance="outline" class="full-width">
+          <mat-label>Prescription</mat-label>
+          <textarea matInput formControlName="prescription" rows="2"></textarea>
+          <mat-error>{{ error('prescription', 'Prescription') }}</mat-error>
+        </mat-form-field>
+        <mat-form-field appearance="outline" class="full-width">
+          <mat-label>Notes</mat-label>
+          <textarea matInput formControlName="notes" rows="3"></textarea>
+          <mat-error>{{ error('notes', 'Notes') }}</mat-error>
+        </mat-form-field>
+      </div>
+
+      <div class="form-actions">
+        <a mat-button [routerLink]="patientId ? ['/patients', patientId] : ['/medical-records']">
+          Cancel
+        </a>
+        <button mat-flat-button color="primary" type="submit" [disabled]="submitting">
+          {{ submitting ? 'Saving...' : 'Save record' }}
+        </button>
+      </div>
+    </form>
+  </mat-card>
+</div>

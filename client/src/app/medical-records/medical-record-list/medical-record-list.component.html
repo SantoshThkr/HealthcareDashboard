@@ -1,0 +1,81 @@
+<div class="page">
+  <div class="page-header">
+    <h1>Medical Records</h1>
+    <a *ngIf="isDoctor" mat-flat-button color="primary" routerLink="new">
+      <mat-icon aria-hidden="true">note_add</mat-icon>
+      Add record
+    </a>
+  </div>
+
+  <mat-card>
+    <form class="filters" [formGroup]="filters" role="search">
+      <mat-form-field appearance="outline">
+        <mat-label>Search</mat-label>
+        <input matInput formControlName="search" placeholder="Patient name or diagnosis" />
+        <mat-icon matSuffix aria-hidden="true">search</mat-icon>
+      </mat-form-field>
+    </form>
+
+    <div class="table-container">
+      <table mat-table [dataSource]="records" aria-label="Medical records">
+        <ng-container matColumnDef="visitDate">
+          <th mat-header-cell *matHeaderCellDef>Visit date</th>
+          <td mat-cell *matCellDef="let record">{{ record.visitDate | date: 'mediumDate' }}</td>
+        </ng-container>
+        <ng-container matColumnDef="patient">
+          <th mat-header-cell *matHeaderCellDef>Patient</th>
+          <td mat-cell *matCellDef="let record">
+            <a [routerLink]="['/patients', record.patientId]">
+              {{ record.patient?.firstName }} {{ record.patient?.lastName }}
+            </a>
+          </td>
+        </ng-container>
+        <ng-container matColumnDef="diagnosis">
+          <th mat-header-cell *matHeaderCellDef>Diagnosis</th>
+          <td mat-cell *matCellDef="let record">{{ record.diagnosis }}</td>
+        </ng-container>
+        <ng-container matColumnDef="doctor">
+          <th mat-header-cell *matHeaderCellDef>Doctor</th>
+          <td mat-cell *matCellDef="let record">Dr. {{ record.doctor?.lastName }}</td>
+        </ng-container>
+        <ng-container matColumnDef="followUpDate">
+          <th mat-header-cell *matHeaderCellDef>Follow-up</th>
+          <td mat-cell *matCellDef="let record">
+            {{ record.followUpDate ? (record.followUpDate | date: 'mediumDate') : '—' }}
+          </td>
+        </ng-container>
+        <ng-container matColumnDef="actions">
+          <th mat-header-cell *matHeaderCellDef><span class="visually-hidden">Actions</span></th>
+          <td mat-cell *matCellDef="let record">
+            <a
+              *ngIf="isDoctor && record.doctorId === doctorId"
+              mat-button
+              [routerLink]="[record.id, 'edit']"
+              [attr.aria-label]="'Edit record from ' + record.visitDate"
+            >
+              Edit
+            </a>
+          </td>
+        </ng-container>
+
+        <tr mat-header-row *matHeaderRowDef="columns"></tr>
+        <tr mat-row *matRowDef="let row; columns: columns"></tr>
+      </table>
+    </div>
+
+    <app-page-state
+      [state]="state"
+      loadingText="Loading medical records..."
+      emptyText="No medical records found."
+      errorText="Unable to load medical records."
+      (retry)="reload()"
+    ></app-page-state>
+
+    <mat-paginator
+      [length]="total"
+      [pageSize]="10"
+      [pageSizeOptions]="[10, 25, 50]"
+      aria-label="Select page of medical records"
+    ></mat-paginator>
+  </mat-card>
+</div>

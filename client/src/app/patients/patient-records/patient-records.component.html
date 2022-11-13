@@ -1,0 +1,58 @@
+<div class="tab-toolbar" *ngIf="isDoctor">
+  <a
+    mat-stroked-button
+    color="primary"
+    routerLink="/medical-records/new"
+    [queryParams]="{ patientId: patientId }"
+  >
+    <mat-icon aria-hidden="true">note_add</mat-icon>
+    Add record
+  </a>
+</div>
+
+<app-page-state
+  [state]="state"
+  loadingText="Loading medical records..."
+  emptyText="No medical records for this patient."
+  errorText="Unable to load medical records."
+  (retry)="load()"
+></app-page-state>
+
+<ol class="records" *ngIf="state === 'loaded'">
+  <li *ngFor="let record of records">
+    <div class="record-header">
+      <div>
+        <h3>{{ record.diagnosis }}</h3>
+        <span class="muted">
+          {{ record.visitDate | date: 'mediumDate' }} · Dr. {{ record.doctor?.firstName }}
+          {{ record.doctor?.lastName }}
+        </span>
+      </div>
+      <a
+        *ngIf="isDoctor && record.doctorId === doctorId"
+        mat-button
+        [routerLink]="['/medical-records', record.id, 'edit']"
+      >
+        Edit
+      </a>
+    </div>
+    <dl>
+      <ng-container *ngIf="record.symptoms">
+        <dt>Symptoms</dt>
+        <dd>{{ record.symptoms }}</dd>
+      </ng-container>
+      <ng-container *ngIf="record.prescription">
+        <dt>Prescription</dt>
+        <dd>{{ record.prescription }}</dd>
+      </ng-container>
+      <ng-container *ngIf="record.notes">
+        <dt>Notes</dt>
+        <dd>{{ record.notes }}</dd>
+      </ng-container>
+      <ng-container *ngIf="record.followUpDate">
+        <dt>Follow-up</dt>
+        <dd>{{ record.followUpDate | date: 'mediumDate' }}</dd>
+      </ng-container>
+    </dl>
+  </li>
+</ol>

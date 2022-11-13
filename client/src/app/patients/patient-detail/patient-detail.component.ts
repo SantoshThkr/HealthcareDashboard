@@ -17,6 +17,8 @@ export class PatientDetailComponent implements OnInit {
   state: LoadState = 'loading';
   errorText = 'Unable to load this patient.';
   canEdit = this.auth.hasRole('ADMIN', 'STAFF');
+  canViewRecords = this.auth.hasRole('ADMIN', 'DOCTOR');
+  selectedTab = 0;
 
   constructor(
     private route: ActivatedRoute,
@@ -26,6 +28,7 @@ export class PatientDetailComponent implements OnInit {
 
   ngOnInit(): void {
     this.patientId = Number(this.route.snapshot.paramMap.get('id'));
+    this.selectedTab = this.canViewRecords && this.route.snapshot.fragment === 'records' ? 2 : 0;
     this.load();
   }
 

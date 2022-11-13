@@ -6,6 +6,7 @@ import { PatientAppointmentsComponent } from './patient-appointments/patient-app
 import { PatientDetailComponent } from './patient-detail/patient-detail.component';
 import { PatientFormComponent } from './patient-form/patient-form.component';
 import { PatientListComponent } from './patient-list/patient-list.component';
+import { PatientRecordsComponent } from './patient-records/patient-records.component';
 
 const routes: Routes = [
   { path: '', component: PatientListComponent, data: { title: 'Patients' } },
@@ -20,6 +21,7 @@ const routes: Routes = [
     PatientFormComponent,
     PatientDetailComponent,
     PatientAppointmentsComponent,
+    PatientRecordsComponent,
   ],
   imports: [SharedModule, RouterModule.forChild(routes)],
 })

@@ -1,0 +1,45 @@
+@use 'styles/variables' as vars;
+
+.records {
+  margin: 0;
+  padding: 0;
+  list-style: none;
+
+  li {
+    padding: 16px 0;
+    border-bottom: 1px solid vars.$border-color;
+
+    &:last-child {
+      border-bottom: none;
+    }
+  }
+}
+
+.record-header {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 8px;
+
+  h3 {
+    margin: 0;
+    font-size: 16px;
+    font-weight: 500;
+  }
+}
+
+dl {
+  display: grid;
+  grid-template-columns: 120px 1fr;
+  gap: 4px 16px;
+  margin: 12px 0 0;
+
+  dt {
+    color: vars.$muted-text-color;
+  }
+
+  dd {
+    margin: 0;
+    white-space: pre-line;
+  }
+}
