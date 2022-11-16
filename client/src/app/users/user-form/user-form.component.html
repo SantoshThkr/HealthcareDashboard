@@ -1,0 +1,71 @@
+<h2 mat-dialog-title>{{ user ? 'Edit user' : 'Add user' }}</h2>
+
+<form [formGroup]="form" (ngSubmit)="submit()" novalidate>
+  <mat-dialog-content>
+    <p class="form-error" *ngIf="formError" role="alert">{{ formError }}</p>
+
+    <div class="form-grid">
+      <mat-form-field appearance="outline">
+        <mat-label>First name</mat-label>
+        <input matInput formControlName="firstName" required />
+        <mat-error>{{ error('firstName', 'First name') }}</mat-error>
+      </mat-form-field>
+      <mat-form-field appearance="outline">
+        <mat-label>Last name</mat-label>
+        <input matInput formControlName="lastName" required />
+        <mat-error>{{ error('lastName', 'Last name') }}</mat-error>
+      </mat-form-field>
+      <mat-form-field appearance="outline" class="full-width">
+        <mat-label>Email</mat-label>
+        <input matInput type="email" formControlName="email" required />
+        <mat-error>{{ error('email', 'Email') }}</mat-error>
+      </mat-form-field>
+      <mat-form-field appearance="outline">
+        <mat-label>Role</mat-label>
+        <mat-select formControlName="role" required>
+          <mat-option *ngFor="let role of roles" [value]="role">{{
+            role | statusLabel
+          }}</mat-option>
+        </mat-select>
+        <mat-hint *ngIf="isSelf">You cannot change your own role</mat-hint>
+      </mat-form-field>
+      <mat-form-field appearance="outline">
+        <mat-label>Status</mat-label>
+        <mat-select formControlName="isActive">
+          <mat-option [value]="true">Active</mat-option>
+          <mat-option [value]="false">Inactive</mat-option>
+        </mat-select>
+      </mat-form-field>
+      <mat-form-field *ngIf="isDoctorRole" appearance="outline" class="full-width">
+        <mat-label>Doctor profile</mat-label>
+        <mat-select formControlName="doctorId">
+          <mat-option [value]="null">Not linked</mat-option>
+          <mat-option *ngFor="let doctor of doctorProfiles" [value]="doctor.id">
+            Dr. {{ doctor.firstName }} {{ doctor.lastName }} ({{ doctor.department }})
+          </mat-option>
+        </mat-select>
+        <mat-hint>Doctors can only see their own patients once linked to a profile</mat-hint>
+        <mat-error>{{ error('doctorId', 'Doctor profile') }}</mat-error>
+      </mat-form-field>
+      <mat-form-field *ngIf="!user" appearance="outline" class="full-width">
+        <mat-label>Temporary password</mat-label>
+        <input
+          matInput
+          type="password"
+          formControlName="password"
+          autocomplete="new-password"
+          required
+        />
+        <mat-hint>At least 8 characters, including a letter and a number</mat-hint>
+        <mat-error>{{ error('password', 'Password') }}</mat-error>
+      </mat-form-field>
+    </div>
+  </mat-dialog-content>
+
+  <mat-dialog-actions align="end">
+    <button mat-button type="button" mat-dialog-close>Cancel</button>
+    <button mat-flat-button color="primary" type="submit" [disabled]="submitting">
+      {{ submitting ? 'Saving...' : 'Save user' }}
+    </button>
+  </mat-dialog-actions>
+</form>

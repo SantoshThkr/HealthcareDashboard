@@ -6,6 +6,7 @@ import dashboardRoutes from './dashboardRoutes';
 import doctorRoutes from './doctorRoutes';
 import medicalRecordRoutes from './medicalRecordRoutes';
 import patientRoutes from './patientRoutes';
+import userRoutes from './userRoutes';
 
 const router = Router();
 
@@ -19,5 +20,6 @@ router.use('/doctors', doctorRoutes);
 router.use('/patients', patientRoutes);
 router.use('/appointments', appointmentRoutes);
 router.use('/medical-records', medicalRecordRoutes);
+router.use('/users', userRoutes);
 
 export default router;
