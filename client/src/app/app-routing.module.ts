@@ -38,6 +38,10 @@ const routes: Routes = [
         path: 'users',
         loadChildren: () => import('./users/users.module').then((m) => m.UsersModule),
       },
+      {
+        path: 'audit-logs',
+        loadChildren: () => import('./audit-logs/audit-logs.module').then((m) => m.AuditLogsModule),
+      },
     ],
   },
   { path: '**', redirectTo: '' },

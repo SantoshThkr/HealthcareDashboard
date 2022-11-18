@@ -2,6 +2,7 @@ import bcrypt from 'bcrypt';
 import { Request, Response } from 'express';
 
 import { User } from '../models';
+import { recordAudit } from '../services/auditService';
 import { ApiError } from '../utils/ApiError';
 import { logger } from '../utils/logger';
 import { signToken } from '../utils/token';
@@ -49,6 +50,7 @@ export async function login(req: Request, res: Response) {
   }
 
   await user.update({ lastLoginAt: new Date() });
+  await recordAudit(user.id, 'LOGIN', 'User', user.id);
 
   res.json({
     success: true,
@@ -63,6 +65,7 @@ export async function me(req: Request, res: Response) {
   res.json({ success: true, data: req.user });
 }
 
-export async function logout(_req: Request, res: Response) {
+export async function logout(req: Request, res: Response) {
+  await recordAudit(req.user!.id, 'LOGOUT', 'User', req.user!.id);
   res.json({ success: true, data: null });
 }

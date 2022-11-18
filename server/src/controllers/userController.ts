@@ -3,6 +3,7 @@ import { Request, Response } from 'express';
 import { Op, WhereOptions } from 'sequelize';
 
 import { Doctor, sequelize, User } from '../models';
+import { recordAudit } from '../services/auditService';
 import { syncDoctorProfile } from '../services/userService';
 import { ApiError } from '../utils/ApiError';
 import { pageResult, paginate, sortOrder } from '../utils/pagination';
@@ -77,6 +78,7 @@ export async function create(req: Request, res: Response) {
     return created;
   });
 
+  await recordAudit(req.user!.id, 'CREATE_USER', 'User', user.id);
   await user.reload({ include: [doctorInclude] });
   res.status(201).json({ success: true, data: user });
 }
@@ -112,6 +114,7 @@ export async function update(req: Request, res: Response) {
     await user.update(changes, { transaction });
     await syncDoctorProfile(user, doctorId, transaction);
   });
+  await recordAudit(req.user!.id, 'UPDATE_USER', 'User', user.id);
 
   await user.reload({ include: [doctorInclude] });
   res.json({ success: true, data: user });

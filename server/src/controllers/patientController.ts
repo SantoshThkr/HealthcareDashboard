@@ -3,6 +3,7 @@ import { col, fn, Op, where as whereFn, WhereOptions } from 'sequelize';
 
 import { Doctor, Patient } from '../models';
 import { doctorIdFor, doctorPatientScope, findAccessiblePatient } from '../services/accessService';
+import { recordAudit } from '../services/auditService';
 import { ApiError } from '../utils/ApiError';
 import { pageResult, paginate, sortOrder } from '../utils/pagination';
 
@@ -83,6 +84,7 @@ export async function get(req: Request, res: Response) {
 export async function create(req: Request, res: Response) {
   const values = await pickValidated(req.body);
   const patient = await Patient.create(values);
+  await recordAudit(req.user!.id, 'CREATE_PATIENT', 'Patient', patient.id);
   await patient.reload({ include: [doctorInclude] });
   res.status(201).json({ success: true, data: patient });
 }
@@ -93,6 +95,7 @@ export async function update(req: Request, res: Response) {
     throw ApiError.notFound('Patient not found');
   }
   await patient.update(await pickValidated(req.body));
+  await recordAudit(req.user!.id, 'UPDATE_PATIENT', 'Patient', patient.id);
   await patient.reload({ include: [doctorInclude] });
   res.json({ success: true, data: patient });
 }
@@ -103,6 +106,7 @@ export async function remove(req: Request, res: Response) {
     throw ApiError.notFound('Patient not found');
   }
   await patient.destroy();
+  await recordAudit(req.user!.id, 'DELETE_PATIENT', 'Patient', patient.id);
   res.json({ success: true, data: null });
 }
 

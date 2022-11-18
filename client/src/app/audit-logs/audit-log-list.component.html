@@ -1,0 +1,94 @@
+<div class="page">
+  <div class="page-header">
+    <h1>Audit Logs</h1>
+  </div>
+
+  <mat-card>
+    <form class="filters" [formGroup]="filters" role="search">
+      <mat-form-field appearance="outline">
+        <mat-label>Action</mat-label>
+        <mat-select formControlName="action">
+          <mat-option value="">All actions</mat-option>
+          <mat-option *ngFor="let action of actions" [value]="action">
+            {{ action | statusLabel }}
+          </mat-option>
+        </mat-select>
+      </mat-form-field>
+      <mat-form-field appearance="outline">
+        <mat-label>User</mat-label>
+        <mat-select formControlName="userId">
+          <mat-option value="">All users</mat-option>
+          <mat-option *ngFor="let user of users$ | async" [value]="user.id">
+            {{ user.firstName }} {{ user.lastName }}
+          </mat-option>
+        </mat-select>
+      </mat-form-field>
+      <mat-form-field appearance="outline">
+        <mat-label>From</mat-label>
+        <input matInput [matDatepicker]="fromPicker" formControlName="dateFrom" />
+        <mat-datepicker-toggle matSuffix [for]="fromPicker"></mat-datepicker-toggle>
+        <mat-datepicker #fromPicker></mat-datepicker>
+      </mat-form-field>
+      <mat-form-field appearance="outline">
+        <mat-label>To</mat-label>
+        <input matInput [matDatepicker]="toPicker" formControlName="dateTo" />
+        <mat-datepicker-toggle matSuffix [for]="toPicker"></mat-datepicker-toggle>
+        <mat-datepicker #toPicker></mat-datepicker>
+      </mat-form-field>
+      <div class="filter-actions">
+        <button mat-button type="button" (click)="clearFilters()">Clear filters</button>
+      </div>
+    </form>
+
+    <div class="table-container">
+      <table mat-table [dataSource]="logs" aria-label="Audit logs">
+        <ng-container matColumnDef="createdAt">
+          <th mat-header-cell *matHeaderCellDef>Timestamp</th>
+          <td mat-cell *matCellDef="let log">{{ log.createdAt | date: 'medium' }}</td>
+        </ng-container>
+        <ng-container matColumnDef="user">
+          <th mat-header-cell *matHeaderCellDef>User</th>
+          <td mat-cell *matCellDef="let log">
+            <ng-container *ngIf="log.user; else deletedUser">
+              {{ log.user.firstName }} {{ log.user.lastName }}
+              <span class="muted">({{ log.user.role | statusLabel }})</span>
+            </ng-container>
+            <ng-template #deletedUser><span class="muted">Unknown user</span></ng-template>
+          </td>
+        </ng-container>
+        <ng-container matColumnDef="action">
+          <th mat-header-cell *matHeaderCellDef>Action</th>
+          <td mat-cell *matCellDef="let log">
+            <code>{{ log.action }}</code>
+          </td>
+        </ng-container>
+        <ng-container matColumnDef="entity">
+          <th mat-header-cell *matHeaderCellDef>Entity</th>
+          <td mat-cell *matCellDef="let log">{{ log.entity }}</td>
+        </ng-container>
+        <ng-container matColumnDef="entityId">
+          <th mat-header-cell *matHeaderCellDef>Entity ID</th>
+          <td mat-cell *matCellDef="let log">{{ log.entityId ?? '—' }}</td>
+        </ng-container>
+
+        <tr mat-header-row *matHeaderRowDef="columns"></tr>
+        <tr mat-row *matRowDef="let row; columns: columns"></tr>
+      </table>
+    </div>
+
+    <app-page-state
+      [state]="state"
+      loadingText="Loading audit logs..."
+      emptyText="No audit entries match these filters."
+      errorText="Unable to load audit logs."
+      (retry)="reload()"
+    ></app-page-state>
+
+    <mat-paginator
+      [length]="total"
+      [pageSize]="25"
+      [pageSizeOptions]="[25, 50, 100]"
+      aria-label="Select page of audit logs"
+    ></mat-paginator>
+  </mat-card>
+</div>

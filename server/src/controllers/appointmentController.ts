@@ -4,6 +4,7 @@ import { col, fn, Op, where as whereFn, WhereOptions } from 'sequelize';
 import { Appointment, Doctor, Patient } from '../models';
 import { AppointmentStatus } from '../models/appointment';
 import { doctorIdFor } from '../services/accessService';
+import { recordAudit } from '../services/auditService';
 import {
   assertParticipants,
   assertSlotAvailable,
@@ -104,6 +105,7 @@ export async function create(req: Request, res: Response) {
     reason,
     notes: notes || null,
   });
+  await recordAudit(req.user!.id, 'CREATE_APPOINTMENT', 'Appointment', appointment.id);
   await appointment.reload({ include });
   res.status(201).json({ success: true, data: appointment });
 }
@@ -147,7 +149,14 @@ export async function update(req: Request, res: Response) {
     }
   }
 
+  const cancelled = status === 'CANCELLED' && appointment.status !== 'CANCELLED';
   await appointment.update(changes);
+  await recordAudit(
+    req.user!.id,
+    cancelled ? 'CANCEL_APPOINTMENT' : 'UPDATE_APPOINTMENT',
+    'Appointment',
+    appointment.id
+  );
   await appointment.reload({ include });
   res.json({ success: true, data: appointment });
 }
@@ -155,5 +164,6 @@ export async function update(req: Request, res: Response) {
 export async function remove(req: Request, res: Response) {
   const appointment = await findAppointment(req);
   await appointment.destroy();
+  await recordAudit(req.user!.id, 'DELETE_APPOINTMENT', 'Appointment', appointment.id);
   res.json({ success: true, data: null });
 }

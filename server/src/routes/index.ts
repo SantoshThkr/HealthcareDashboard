@@ -1,6 +1,7 @@
 import { Router } from 'express';
 
 import appointmentRoutes from './appointmentRoutes';
+import auditLogRoutes from './auditLogRoutes';
 import authRoutes from './authRoutes';
 import dashboardRoutes from './dashboardRoutes';
 import doctorRoutes from './doctorRoutes';
@@ -21,5 +22,6 @@ router.use('/patients', patientRoutes);
 router.use('/appointments', appointmentRoutes);
 router.use('/medical-records', medicalRecordRoutes);
 router.use('/users', userRoutes);
+router.use('/audit-logs', auditLogRoutes);
 
 export default router;

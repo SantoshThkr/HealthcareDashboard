@@ -3,6 +3,7 @@ import { col, fn, Op, where as whereFn, WhereOptions } from 'sequelize';
 
 import { Doctor, MedicalRecord, Patient } from '../models';
 import { doctorIdFor, doctorPatientScope, findAccessiblePatient } from '../services/accessService';
+import { recordAudit } from '../services/auditService';
 import { ApiError } from '../utils/ApiError';
 import { pageResult, paginate, sortOrder } from '../utils/pagination';
 
@@ -102,6 +103,7 @@ export async function create(req: Request, res: Response) {
     patientId: patient.id,
     doctorId: doctorIdFor(req.user!),
   });
+  await recordAudit(req.user!.id, 'CREATE_MEDICAL_RECORD', 'MedicalRecord', record.id);
   await record.reload({ include: [doctorInclude] });
   res.status(201).json({ success: true, data: record });
 }
@@ -115,6 +117,7 @@ export async function update(req: Request, res: Response) {
     throw ApiError.forbidden('Only the doctor who created this record can update it');
   }
   await record.update(recordValues(req.body));
+  await recordAudit(req.user!.id, 'UPDATE_MEDICAL_RECORD', 'MedicalRecord', record.id);
   await record.reload({ include: [doctorInclude] });
   res.json({ success: true, data: record });
 }

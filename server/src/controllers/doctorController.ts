@@ -2,6 +2,7 @@ import { Request, Response } from 'express';
 import { Op, WhereOptions } from 'sequelize';
 
 import { Doctor } from '../models';
+import { recordAudit } from '../services/auditService';
 import { ApiError } from '../utils/ApiError';
 import { pageResult, paginate, sortOrder } from '../utils/pagination';
 
@@ -74,18 +75,21 @@ export async function get(req: Request, res: Response) {
 
 export async function create(req: Request, res: Response) {
   const doctor = await Doctor.create(pick(req.body));
+  await recordAudit(req.user!.id, 'CREATE_DOCTOR', 'Doctor', doctor.id);
   res.status(201).json({ success: true, data: doctor });
 }
 
 export async function update(req: Request, res: Response) {
   const doctor = await findDoctor(Number(req.params.id));
   await doctor.update(pick(req.body));
+  await recordAudit(req.user!.id, 'UPDATE_DOCTOR', 'Doctor', doctor.id);
   res.json({ success: true, data: doctor });
 }
 
 export async function remove(req: Request, res: Response) {
   const doctor = await findDoctor(Number(req.params.id));
   await doctor.destroy();
+  await recordAudit(req.user!.id, 'DELETE_DOCTOR', 'Doctor', doctor.id);
   res.json({ success: true, data: null });
 }
 
