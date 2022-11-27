@@ -15,5 +15,10 @@ export const loginRules = [
     .isEmail()
     .withMessage('Invalid email')
     .normalizeEmail({ gmail_remove_dots: false }),
-  body('password').isString().notEmpty().withMessage('Password is required'),
+  body('password')
+    .isString()
+    .withMessage('Password is required')
+    .bail()
+    .notEmpty()
+    .withMessage('Password is required'),
 ];
