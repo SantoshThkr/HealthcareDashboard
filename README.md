@@ -1,52 +1,75 @@
 # Healthcare Dashboard
 
-A management dashboard for a small clinic: patients, doctors, appointments, medical records, users and an audit trail. Angular 12 frontend, Express + PostgreSQL API.
+A management dashboard for a small clinic covering patients, doctors, appointments, medical records, users and audit logs.
 
-> **Demo project.** All patient and medical data is synthetic. The application has not been reviewed for HIPAA or any other regulatory compliance and is not intended for clinical use.
+> **Demo project:** All patient and medical data is synthetic. This project has not been reviewed for HIPAA or other regulatory compliance and is not intended for clinical use.
 
 ## Features
 
-- JWT sign-in with role-based access for **Admin**, **Doctor** and **Staff**
-- Dashboard with patient/doctor/appointment totals, today's and upcoming appointments, and recent activity
-- Patient management with search, sorting, status filter and pagination, plus a detail page with appointments and medical records tabs
-- Doctor directory with department and status filters
-- Appointment scheduling with double-booking checks and enforced status transitions
-- Medical records that only the treating doctor can create or edit
-- Admin user management: create users, change roles, activate/deactivate, reset passwords, link doctor accounts to doctor profiles
-- Audit log of logins and data changes, filterable by action, user and date
-- Responsive layout (collapsible navigation on small screens), keyboard accessible, labelled forms
+* JWT authentication with Admin, Doctor and Staff roles
+* Dashboard with patient, doctor and appointment stats
+* Patient management with search, sorting, filtering and pagination
+* Doctor directory with department and status filters
+* Appointment scheduling with double-booking checks and status rules
+* Medical records with doctor-only create/edit access
+* Admin user management
+* Audit log for logins and data changes
+* Responsive and keyboard-accessible UI
 
-## Technology stack
+## Tech Stack
 
-| Area     | Tools                                                                    |
-| -------- | ------------------------------------------------------------------------ |
-| Frontend | Angular 12, TypeScript, RxJS, Angular Material, Reactive Forms, SCSS     |
-| Backend  | Node.js 16, Express 4, TypeScript, Sequelize 6, PostgreSQL 13            |
-| Security | bcrypt, jsonwebtoken, helmet, cors, express-rate-limit, express-validator |
-| Testing  | Jasmine + Karma (frontend), Jest + Supertest (backend)                   |
-| Tooling  | ESLint, Prettier, Docker, Docker Compose, GitHub Actions                 |
+**Frontend:** Angular 12, TypeScript, RxJS, Angular Material, Reactive Forms, SCSS
+
+**Backend:** Node.js 16, Express 4, TypeScript, Sequelize 6, PostgreSQL 13
+
+**Security:** bcrypt, jsonwebtoken, Helmet, CORS, express-rate-limit, express-validator
+
+**Testing:** Jasmine, Karma, Jest, Supertest
+
+**Tools:** ESLint, Prettier, Docker, Docker Compose, GitHub Actions
 
 ## Architecture
 
-```
-Browser ──> nginx (Angular build) ──/api──> Express API ──> PostgreSQL
+```text id="m2oz4n"
+Angular
+   ↓
+nginx
+   ↓
+Express API
+   ↓
+PostgreSQL
 ```
 
-- The Angular app is split into lazy-loaded feature modules. `CoreModule` holds singleton services, guards and HTTP interceptors; `SharedModule` holds Material imports and small reusable pieces.
-- `AuthInterceptor` attaches the token, `ErrorInterceptor` turns HTTP errors into a single `ApiError` shape and handles expired sessions. `AuthGuard` and `RoleGuard` protect routes.
-- The API is a single Express app organised by layer (routes → validators → controllers → services → models). Controllers handle HTTP; services hold the logic that is more than CRUD (access scoping, appointment rules, dashboard aggregation, audit writes).
-- **Authorization is enforced on the API.** Hiding menu items and buttons in the UI is only a convenience.
+The Angular app uses lazy-loaded feature modules, shared services, route guards and HTTP interceptors.
 
-## Project structure
+The API follows:
 
+```text id="e5k4fq"
+routes
+  ↓
+validators
+  ↓
+controllers
+  ↓
+services
+  ↓
+models
+  ↓
+PostgreSQL
 ```
+
+Authorization is enforced on the API, not only in the frontend.
+
+## Project Structure
+
+```text id="vnwq4h"
 .
-├── client/                    Angular application
+├── client/
 │   └── src/app/
-│       ├── core/              models, services, guards, interceptors
-│       ├── shared/            Material module, page-state, dialogs, pipes, form validators
-│       ├── auth/              login and registration
-│       ├── layout/            sidebar, header, shell
+│       ├── core/
+│       ├── shared/
+│       ├── auth/
+│       ├── layout/
 │       ├── dashboard/
 │       ├── patients/
 │       ├── doctors/
@@ -54,12 +77,13 @@ Browser ──> nginx (Angular build) ──/api──> Express API ──> Post
 │       ├── medical-records/
 │       ├── users/
 │       └── audit-logs/
-├── server/                    Express API
+│
+├── server/
 │   ├── src/
-│   │   ├── config/            environment and database connection
+│   │   ├── config/
 │   │   ├── controllers/
-│   │   ├── middleware/        authenticate, authorize, validate, error handling
-│   │   ├── models/            Sequelize models and associations
+│   │   ├── middleware/
+│   │   ├── models/
 │   │   ├── routes/
 │   │   ├── services/
 │   │   ├── validators/
@@ -67,175 +91,217 @@ Browser ──> nginx (Angular build) ──/api──> Express API ──> Post
 │   ├── migrations/
 │   ├── seeders/
 │   └── tests/
+│
 ├── docker-compose.yml
 └── .github/workflows/ci.yml
 ```
 
-## Environment setup
+## Setup
 
-Requirements: Node.js 16 (see `.nvmrc`), npm 8, PostgreSQL 13+ (or Docker).
+Requirements:
 
-```bash
+* Node.js 16
+* npm 8
+* PostgreSQL 13+ or Docker
+
+Create the server environment file:
+
+```bash id="3d4p3f"
 cp server/.env.example server/.env
 ```
 
-| Variable         | Description                                 | Example                                                  |
-| ---------------- | ------------------------------------------- | -------------------------------------------------------- |
-| `PORT`           | API port                                    | `5000`                                                   |
-| `DATABASE_URL`   | PostgreSQL connection string                | `postgres://healthcare:healthcare@localhost:5432/healthcare_dashboard` |
-| `JWT_SECRET`     | Secret used to sign tokens (keep it long and private) |                                                |
-| `JWT_EXPIRES_IN` | Token lifetime                              | `8h`                                                     |
-| `CLIENT_URL`     | Allowed CORS origin                         | `http://localhost:4200`                                  |
-| `LOG_LEVEL`      | winston log level                           | `info`                                                   |
+Set:
 
-`.env` files are git-ignored. Never commit real secrets.
-
-## Database setup
-
-Create a database (or start one with Docker):
-
-```bash
-docker run -d --name healthcare-db -p 5432:5432 \
-  -e POSTGRES_USER=healthcare -e POSTGRES_PASSWORD=healthcare \
-  -e POSTGRES_DB=healthcare_dashboard postgres:13-alpine
+```text id="0y4mlk"
+PORT
+DATABASE_URL
+JWT_SECRET
+JWT_EXPIRES_IN
+CLIENT_URL
+LOG_LEVEL
 ```
 
-Run migrations and load demo data:
+Never commit real secrets.
 
-```bash
+## Database
+
+Start PostgreSQL locally or with Docker.
+
+Example:
+
+```bash id="jmu77t"
+docker run -d --name healthcare-db -p 5432:5432 \
+  -e POSTGRES_USER=healthcare \
+  -e POSTGRES_PASSWORD=healthcare \
+  -e POSTGRES_DB=healthcare_dashboard \
+  postgres:13-alpine
+```
+
+Run migrations and seed demo data:
+
+```bash id="y5yhqk"
 cd server
 npm install
 npm run db:migrate
 npm run db:seed
 ```
 
-`npm run db:seed:undo` removes the demo data and `npm run db:migrate:undo` rolls back the last migration.
+## Run Locally
 
-## Running locally
+Start the API:
 
-```bash
-# API on http://localhost:5000
+```bash id="p5r2m2"
 cd server
 npm run dev
+```
 
-# Frontend on http://localhost:4200 (proxies /api to the API)
+Start the Angular app:
+
+```bash id="9jkmp0"
 cd client
 npm install
 npm start
 ```
 
-## Running tests
+Default URLs:
 
-Frontend (Karma, headless Chrome):
+```text id="5zyi6m"
+API      → http://localhost:5000
+Frontend → http://localhost:4200
+```
 
-```bash
+## Docker
+
+```bash id="y3x88f"
+cp .env.example .env
+docker compose up --build
+```
+
+Open `http://localhost:8080`.
+
+The containers run the database, API and Angular app, with nginx serving the frontend and proxying `/api` requests.
+
+## API
+
+Main endpoints:
+
+```text id="8r1s10"
+POST   /api/auth/register
+POST   /api/auth/login
+GET    /api/auth/me
+POST   /api/auth/logout
+
+GET    /api/dashboard/summary
+GET    /api/dashboard/recent-activity
+
+GET    /api/patients
+GET    /api/patients/:id
+POST   /api/patients
+PUT    /api/patients/:id
+DELETE /api/patients/:id
+
+GET    /api/doctors
+GET    /api/doctors/:id
+POST   /api/doctors
+PUT    /api/doctors/:id
+DELETE /api/doctors/:id
+
+GET    /api/appointments
+GET    /api/appointments/:id
+POST   /api/appointments
+PUT    /api/appointments/:id
+DELETE /api/appointments/:id
+
+GET    /api/medical-records
+GET    /api/patients/:id/medical-records
+POST   /api/patients/:id/medical-records
+PUT    /api/medical-records/:id
+
+GET    /api/users
+POST   /api/users
+PUT    /api/users/:id
+
+GET    /api/audit-logs
+GET    /api/health
+```
+
+All protected endpoints require a Bearer token.
+
+Doctors only see patients assigned to them or patients they have appointments with. Medical records can only be created or edited by the treating doctor.
+
+Appointment status follows:
+
+```text id="s9y5r0"
+SCHEDULED → CONFIRMED → COMPLETED
+SCHEDULED → CANCELLED
+CONFIRMED → CANCELLED
+```
+
+## User Roles
+
+| Capability                  | Admin |     Doctor    | Staff |
+| --------------------------- | :---: | :-----------: | :---: |
+| Dashboard                   |   ✓   |    Own data   |   ✓   |
+| View patients               |   ✓   | Assigned only |   ✓   |
+| Create/edit patients        |   ✓   |               |   ✓   |
+| Delete patients             |   ✓   |               |       |
+| Manage doctors              |   ✓   |               |       |
+| Manage appointments         |   ✓   |  Own updates  |   ✓   |
+| View medical records        |   ✓   | Assigned only |       |
+| Create/edit medical records |       |    Own only   |       |
+| Manage users                |   ✓   |               |       |
+| View audit logs             |   ✓   |               |       |
+
+A doctor's account must be linked to a doctor profile before they can access patient data.
+
+## Testing
+
+Frontend:
+
+```bash id="q2ti3f"
 cd client
-npm run test:ci      # single run
-npm test             # watch mode
+npm run test:ci
 npm run lint
 ```
 
-Backend (Jest + Supertest). The tests run migrations against a separate database and truncate it between tests:
+Backend:
 
-```bash
-docker exec -it healthcare-db psql -U healthcare -c "CREATE DATABASE healthcare_dashboard_test"
+```bash id="mqd1b6"
 cd server
 npm test
 npm run lint
 ```
 
-Set `TEST_DATABASE_URL` if your test database lives elsewhere.
+Backend tests use a separate database and cover authentication, authorization, CRUD operations, validation and ownership rules.
 
-## Docker setup
+## Demo Data
 
-```bash
-cp .env.example .env          # then set POSTGRES_PASSWORD and JWT_SECRET
-docker compose up --build
-docker compose exec api npm run db:seed    # optional demo data
+After:
+
+```bash id="l4fgn5"
+npm run db:seed
 ```
 
-The app is served on http://localhost:8080. nginx serves the Angular build and proxies `/api` to the API container; the API runs migrations on start-up.
+the project creates demo users, doctors, patients, appointments, medical records and audit entries.
 
-## API overview
+All names, emails and other patient information are synthetic.
 
-All responses use the same envelope:
+Default demo password:
 
-```json
-{ "success": true, "data": {} }
-{ "success": false, "message": "Patient not found" }
-{ "success": false, "message": "Validation failed", "errors": { "email": "Invalid email" } }
+```text id="8mzw6c"
+Password123!
 ```
 
-List endpoints accept `page`, `pageSize` (max 100), `sortBy`, `sortDir` and `search`, and return `{ items, total, page, pageSize }`.
+## Security Notes
 
-| Method | Endpoint                             | Roles               | Notes                                       |
-| ------ | ------------------------------------ | ------------------- | ------------------------------------------- |
-| POST   | `/api/auth/register`                 | public              | Creates an inactive Staff account           |
-| POST   | `/api/auth/login`                    | public              | Rate limited                                |
-| GET    | `/api/auth/me`                       | any                 |                                             |
-| POST   | `/api/auth/logout`                   | any                 | Records the logout                          |
-| GET    | `/api/dashboard/summary`             | any                 | Doctors see their own numbers               |
-| GET    | `/api/dashboard/recent-activity`     | any                 |                                             |
-| GET    | `/api/patients`                      | any                 | `status`, `doctorId` filters; doctors see their patients only |
-| GET    | `/api/patients/:id`                  | any                 |                                             |
-| POST   | `/api/patients`                      | Admin, Staff        |                                             |
-| PUT    | `/api/patients/:id`                  | Admin, Staff        |                                             |
-| DELETE | `/api/patients/:id`                  | Admin               | Blocked if the patient has history          |
-| GET    | `/api/doctors`                       | any                 | `status`, `department` filters              |
-| GET    | `/api/doctors/:id`                   | any                 |                                             |
-| POST   | `/api/doctors`                       | Admin               |                                             |
-| PUT    | `/api/doctors/:id`                   | Admin               |                                             |
-| DELETE | `/api/doctors/:id`                   | Admin               |                                             |
-| GET    | `/api/appointments`                  | any                 | `date`, `dateFrom`, `dateTo`, `doctorId`, `patientId`, `status` |
-| GET    | `/api/appointments/:id`              | any                 |                                             |
-| POST   | `/api/appointments`                  | Admin, Staff        |                                             |
-| PUT    | `/api/appointments/:id`              | Admin, Staff, Doctor | Doctors may only change status/notes on their own appointments |
-| DELETE | `/api/appointments/:id`              | Admin               |                                             |
-| GET    | `/api/medical-records`               | Admin, Doctor       |                                             |
-| GET    | `/api/medical-records/:id`           | Admin, Doctor       |                                             |
-| GET    | `/api/patients/:id/medical-records`  | Admin, Doctor       |                                             |
-| POST   | `/api/patients/:id/medical-records`  | Doctor              | Patient must be assigned to the doctor      |
-| PUT    | `/api/medical-records/:id`           | Doctor              | Author only                                 |
-| GET    | `/api/users`                         | Admin               | `role`, `isActive` filters                  |
-| POST   | `/api/users`                         | Admin               |                                             |
-| PUT    | `/api/users/:id`                     | Admin               | Admins cannot change their own role or deactivate themselves |
-| GET    | `/api/audit-logs`                    | Admin               | `action`, `userId`, `dateFrom`, `dateTo`    |
+* Passwords are hashed with bcrypt.
+* JWT authentication is enforced on the server.
+* Role and ownership checks are handled by the API.
+* Auth endpoints are rate limited.
+* Input is validated before processing.
+* Helmet and restricted CORS are configured.
+* Secrets are kept in environment variables.
+* Tokens are stored in `localStorage`.
+* There is no refresh-token flow, MFA or account lockout.
 
-Appointment status can only move `SCHEDULED → CONFIRMED → COMPLETED`, or to `CANCELLED` from `SCHEDULED` or `CONFIRMED`. Anything else returns `409`.
-
-## User roles
-
-| Capability                          | Admin | Doctor         | Staff |
-| ----------------------------------- | :---: | :------------: | :---: |
-| Dashboard                           | ✓     | own data       | ✓     |
-| View patients                       | ✓     | assigned only  | ✓     |
-| Create / edit patients              | ✓     |                | ✓     |
-| Delete patients                     | ✓     |                |       |
-| View doctors                        | ✓     |                | ✓     |
-| Manage doctors                      | ✓     |                |       |
-| Manage appointments                 | ✓     |                | ✓     |
-| Update appointment status           | ✓     | own only       | ✓     |
-| View medical records                | ✓     | assigned only  |       |
-| Create / edit medical records       |       | own only       |       |
-| Manage users                        | ✓     |                |       |
-| View audit logs                     | ✓     |                |       |
-
-A doctor's "assigned" patients are those assigned to them plus anyone they have an appointment with. Doctor accounts must be linked to a doctor profile (Users → Edit) before they can see patient data.
-
-## Demo credentials
-
-After `npm run db:seed` every account uses the password `Password123!`.
-
-| Email                 | Role   | Notes                        |
-| --------------------- | ------ | ---------------------------- |
-| `admin@example.com`   | Admin  |                              |
-| `doctor@example.com`  | Doctor | Dr. Sarah Smith, Cardiology  |
-| `doctor2@example.com` | Doctor | Dr. James Patel, General Medicine |
-| `staff@example.com`   | Staff  |                              |
-| `staff2@example.com`  | Staff  |                              |
-
-The seed also creates 3 doctor profiles, 10 patients, 12 appointments around today's date, a few medical records and audit entries. All names, phone numbers and emails are made up.
-
-## Security notes
-
-The project follows common practice (hashed passwords, short-lived JWTs, server-side role checks, input validation, rate-limited auth endpoints, helmet headers, restricted CORS, no secrets in the repo), but it is a demo and has not had a security review. In particular, tokens are kept in `localStorage` and there is no refresh-token flow, account lockout or MFA.
+This is a demo application and has not undergone a formal security review.
